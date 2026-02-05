@@ -1,7 +1,6 @@
 name: Build Minecraft Plugin
 
 on:
-  push:
   workflow_dispatch:
 
 jobs:
@@ -18,23 +17,24 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Unzip plugin source
+      - name: Unzip source
         run: unzip DBtesting-plugin-source.zip
 
-      - name: Find project directory
+      - name: List files (verify)
         run: |
-          echo "Searching for build.gradle..."
-          PROJECT_DIR=$(dirname "$(find . -name build.gradle | head -n 1)")
-          echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
+          echo "ROOT:"
+          ls -la
+          echo "SRC:"
+          ls -la src
 
       - name: Build with Gradle (no wrapper)
         uses: gradle/gradle-build-action@v3
         with:
+          build-root-directory: .
           arguments: build
-          build-root-directory: ${{ env.PROJECT_DIR }}
 
       - name: Upload JAR
         uses: actions/upload-artifact@v4
         with:
           name: DBtesting-plugin
-          path: ${{ env.PROJECT_DIR }}/build/libs/*.jar
+          path: build/libs/*.jar
