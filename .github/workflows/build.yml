@@ -21,14 +21,14 @@ jobs:
       - name: Unzip plugin source
         run: unzip DBtesting-plugin-source.zip
 
-      - name: Make Gradle executable
-        run: chmod +x gradlew
-
       - name: Build with Gradle
-        run: ./gradlew build
+        run: |
+          cd DBtesting
+          chmod +x gradlew
+          ./gradlew build
 
       - name: Upload JAR
         uses: actions/upload-artifact@v4
         with:
           name: DBtesting-plugin
-          path: build/libs/*.jar
+          path: DBtesting/build/libs/*.jar
