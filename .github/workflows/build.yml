@@ -21,17 +21,20 @@ jobs:
       - name: Unzip plugin source
         run: unzip DBtesting-plugin-source.zip
 
-      - name: Show files (debug)
-        run: ls -la
+      - name: Find project directory
+        run: |
+          echo "Searching for build.gradle..."
+          PROJECT_DIR=$(dirname "$(find . -name build.gradle | head -n 1)")
+          echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
 
-      - name: Make Gradle executable
-        run: chmod +x gradlew
-
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Build with Gradle (no wrapper)
+        uses: gradle/gradle-build-action@v3
+        with:
+          arguments: build
+          build-root-directory: ${{ env.PROJECT_DIR }}
 
       - name: Upload JAR
         uses: actions/upload-artifact@v4
         with:
           name: DBtesting-plugin
-          path: build/libs/*.jar
+          path: ${{ env.PROJECT_DIR }}/build/libs/*.jar
